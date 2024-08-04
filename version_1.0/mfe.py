@@ -17,6 +17,8 @@ try:
     import RNAfold
 except ImportError:
     wRNAfold=False
+ViennaRNA_location = None  # Only needs to be specified if the ViennaRNA collection of executables are not on the system path
+_ViennaRNA_add_location = lambda executable: join(ViennaRNA_location, executable) if ViennaRNA_location else executable
 os.environ["PATH"]=os.environ["PATH"]+":/usr/local/bin"
 
 # Function defining behaviour if a folding program fails
@@ -32,7 +34,7 @@ def onfail(f, tries, *args):
 # Compute MFE structure of RNA sequence s, return pair of structure in
 # bracket notation and MFE as float (pk... uses pknotsRG, ... uses default)
 def fold(s, T = None, tries = 0):
-  cmd = ["RNAfold"]
+  cmd = [_ViennaRNA_add_location("RNAfold")]
   tmpdir = mkdtemp()
   if T != None:
     cmd.extend(["-T", str(T)])
@@ -65,7 +67,7 @@ def pfold(s, T = None, tries = 0):
 
   struct = t[0].strip("][''\n")
   
-  cmd = ["RNAeval"]
+  cmd = [_ViennaRNA_add_location("RNAeval")]
   tmpdir = mkdtemp()
   pop = Popen(cmd, stdin = PIPE, stdout = PIPE, cwd = tmpdir)
   print >> pop.stdin, int2str(s)
@@ -152,13 +154,13 @@ def boltzmann(s, T = None, struct = None, tries = 0):
       os.remove(tempfile)
   else:
         if T==None and struct == None:
-            cmd=['RNAfold','-p','--noPS']          
+            cmd=[_ViennaRNA_add_location('RNAfold'),'-p','--noPS']          
         elif T==None and struct != None:
-            cmd=['RNAfold','-p','--noPS', '-C']
+            cmd=[_ViennaRNA_add_location('RNAfold'),'-p','--noPS', '-C']
         elif T!=None and struct != None:
-            cmd=['RNAfold','-p','--noPS','-C','-T',str(T)]
+            cmd=[_ViennaRNA_add_location('RNAfold'),'-p','--noPS','-C','-T',str(T)]
         else:
-            cmd=['RNAfold','-p','--noPS','-T',str(T)]
+            cmd=[_ViennaRNA_add_location('RNAfold'),'-p','--noPS','-T',str(T)]
             
         p=Popen(cmd,stdin=PIPE,stdout=PIPE)
         if struct == None:
@@ -246,7 +248,7 @@ def pboltzmann(s, T = None, struct = None, tries = 0):
   except IndexError:
     return onfail(pboltzmann, tries, s, T)
 
-  cmd2 = ["RNAeval"]
+  cmd2 = [_ViennaRNA_add_location("RNAeval")]
   tmpdir = mkdtemp()
   pop = Popen(cmd2, stdin = PIPE, stdout = PIPE, cwd = tmpdir)
   print >> pop.stdin, int2str(s)
@@ -276,7 +278,7 @@ def pkboltzmann(s, T = None, tries = 0):
 # RNAeval works with two-bracket pseudoknots
 # Evaluate the energy of structure t on sequence s
 def energy(s, t, tries = 0):
-  cmd = ["RNAeval"]
+  cmd = [_ViennaRNA_add_location("RNAeval")]
   tmpdir = mkdtemp()
   p = Popen(cmd, stdin = PIPE, stdout = PIPE, cwd = tmpdir)
   print >> p.stdin, int2str(s)
