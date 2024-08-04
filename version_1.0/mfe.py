@@ -140,9 +140,9 @@ def boltzmann(s, T = None, struct = None, tries = 0):
         T hen the string 'sequences'  followed by all of the sequences.  Each sequences should be preceded by '>'
         and a unique index for referencing the output back to the group """
       if T==None:
-          inputstring+=" -p -noPS sequences"
+          inputstring+=" -p --noPS sequences"
       else:
-          inputstring+=" -p -noPS -T "+str(T)+" sequences"
+          inputstring+=" -p --noPS -T "+str(T)+" sequences"
             
       inputstring+=' >'+(int2str(s))+' '+int2str(s)
       RNAfold.runRNAfold(inputstring)
@@ -152,13 +152,13 @@ def boltzmann(s, T = None, struct = None, tries = 0):
       os.remove(tempfile)
   else:
         if T==None and struct == None:
-            cmd=['RNAfold','-p','-noPS']          
+            cmd=['RNAfold','-p','--noPS']          
         elif T==None and struct != None:
-            cmd=['RNAfold','-p','-noPS', '-C']
+            cmd=['RNAfold','-p','--noPS', '-C']
         elif T!=None and struct != None:
-            cmd=['RNAfold','-p','-noPS','-C','-T',str(T)]
+            cmd=['RNAfold','-p','--noPS','-C','-T',str(T)]
         else:
-            cmd=['RNAfold','-p','-noPS','-T',str(T)]
+            cmd=['RNAfold','-p','--noPS','-T',str(T)]
             
         p=Popen(cmd,stdin=PIPE,stdout=PIPE)
         if struct == None:
